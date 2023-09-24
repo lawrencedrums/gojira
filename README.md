@@ -4,19 +4,22 @@ A minimalist, "JIRA" alternative written in Go (Gojira is also one of my favouri
 
 ## Requirements
 [Go](https://go.dev/dl/)
+
 [mysql](https://dev.mysql.com/downloads/mysql/)
 
 ## Setup
 Rename `.env.template` to `.env`
+
 Insert your mysql username(usually `root`) and password that you setup during installation
 
 ## Running
-`go run .` to start server
+`go run ./cmd/gojira` to start server
 or
-`go build && ./gojira` to build and run the server
+`go build ./cmd/gojira && ./gojira` to build and run the executable
 
 ## Interacting
 Right now it is only a simple CRUD endpoint
+
 You can use `curl` or tools like Postman to interact with the DB at `localhost:8000`
 
 Available actions:

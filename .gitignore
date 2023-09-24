@@ -3,3 +3,4 @@
 .env
 
 gojira
+!/cmd/gojira

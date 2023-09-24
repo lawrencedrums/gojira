@@ -11,14 +11,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
     "github.com/joho/godotenv"
-)
 
-type Issue struct {
-    ID         string `json:"id"`
-    Title      string `json:"title"`
-    Body       string `json:"body"`
-    IsArchived bool   `json:"IsArchived"`
-}
+    "github.com/lawrencedrums/gojira/internal"
+)
 
 var db *sql.DB
 var err error
@@ -59,8 +54,6 @@ func main() {
 
     fmt.Println("Connection to DB established")
 
-    // db.Exec("DROP TABLE issues")
-
     var stmt *sql.Stmt
     stmt, err = db.Prepare(`
         CREATE TABLE IF NOT EXISTS issues(
@@ -99,10 +92,10 @@ func getIssues(w http.ResponseWriter, r *http.Request) {
     }
     defer result.Close()
 
-    var issues []Issue
+    var issues []models.Issue
 
     for result.Next() {
-        var issue Issue
+        var issue models.Issue
         err := result.Scan(&issue.ID, &issue.Title, &issue.Body)
         if err != nil {
             panic(err.Error())
@@ -150,7 +143,7 @@ func getIssue(w http.ResponseWriter, r *http.Request) {
     }
     defer result.Close()
 
-    var issue Issue
+    var issue models.Issue
 
     for result.Next() {
         err := result.Scan(&issue.ID, &issue.Title, &issue.Body, &issue.IsArchived)
