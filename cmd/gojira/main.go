@@ -3,14 +3,12 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"net/http"
     "os"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/mux"
     "github.com/joho/godotenv"
 
-    "github.com/lawrencedrums/gojira/api/v1"
+    "github.com/lawrencedrums/gojira/api/v1/router"
 )
 
 var db *sql.DB
@@ -71,13 +69,6 @@ func main() {
         panic(err.Error())
     }
 
-    router := mux.NewRouter()
-
-    router.HandleFunc("/issues", handlers.GetIssues).Methods("GET")
-    router.HandleFunc("/issues", handlers.CreateIssue).Methods("POST")
-    router.HandleFunc("/issues/{id}", handlers.GetIssue).Methods("GET")
-    router.HandleFunc("/issues/{id}", handlers.UpdateIssue).Methods("PUT")
-
-    http.ListenAndServe(":8000", router)
+    router.Router()
 }
 
