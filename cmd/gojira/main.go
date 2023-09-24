@@ -3,15 +3,16 @@ package main
 import (
 	"database/sql"
 	"fmt"
+    "net/http"
     "os"
 
 	_ "github.com/go-sql-driver/mysql"
     "github.com/joho/godotenv"
 
     "github.com/lawrencedrums/gojira/api/v1/router"
+    "github.com/lawrencedrums/gojira/internal/database"
 )
 
-var db *sql.DB
 var err error
 
 const (
@@ -28,30 +29,39 @@ func main() {
     dbPass := os.Getenv("DBPass")
 
     dbSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/", dbUser, dbPass, dbHost, dbPort)
-    db, err = sql.Open("mysql", dbSource)
+    database.DBCon, err = sql.Open("mysql", dbSource)
     if err != nil {
         panic(err.Error())
     }
-    defer db.Close()
+    defer database.DBCon.Close()
 
-    if err = db.Ping(); err != nil {
+    if err = database.DBCon.Ping(); err != nil {
         panic(err.Error())
     }
-
-    _, err = db.Exec("CREATE DATABASE IF NOT EXISTS gojira")
-    if err != nil {
-        panic(err.Error())
-    }
-
-    _, err = db.Exec("USE gojira")
-    if err != nil {
-        panic(err.Error())
-    }
-
     fmt.Println("Connection to DB established")
 
+    ensureDBExists(database.DBCon)
+    ensureTablesExists(database.DBCon)
+
+    router := router.NewRouter()
+    http.ListenAndServe(":8000", router)
+}
+
+func ensureDBExists(DB *sql.DB) {
+    _, err = DB.Exec("CREATE DATABASE IF NOT EXISTS gojira")
+    if err != nil {
+        panic(err.Error())
+    }
+
+    _, err = DB.Exec("USE gojira")
+    if err != nil {
+        panic(err.Error())
+    }
+}
+
+func ensureTablesExists(DB *sql.DB) {
     var stmt *sql.Stmt
-    stmt, err = db.Prepare(`
+    stmt, err = DB.Prepare(`
         CREATE TABLE IF NOT EXISTS issues(
             id INT NOT NULL AUTO_INCREMENT,
             title VARCHAR(255),
@@ -68,7 +78,4 @@ func main() {
     if err != nil {
         panic(err.Error())
     }
-
-    router.Router()
 }
-

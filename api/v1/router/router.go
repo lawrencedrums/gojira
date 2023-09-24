@@ -1,14 +1,12 @@
 package router
 
 import (
-    "net/http"
-
     "github.com/gorilla/mux"
 
     "github.com/lawrencedrums/gojira/api/v1/handlers"
 )
 
-func Router() {
+func NewRouter() *mux.Router {
     router := mux.NewRouter()
 
     router.HandleFunc("/issues", handlers.GetIssues).Methods("GET")
@@ -16,5 +14,5 @@ func Router() {
     router.HandleFunc("/issues/{id}", handlers.GetIssue).Methods("GET")
     router.HandleFunc("/issues/{id}", handlers.UpdateIssue).Methods("PUT")
 
-    http.ListenAndServe(":8000", router)
+    return router
 }

@@ -10,16 +10,14 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 
-    "github.com/lawrencedrums/gojira/internal"
+    "github.com/lawrencedrums/gojira/internal/models"
+    "github.com/lawrencedrums/gojira/internal/database"
 )
-
-var db *sql.DB
-var err error
 
 func GetIssues(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
 
-    result, err := db.Query("SELECT id, title, body FROM issues WHERE is_archived=0")
+    result, err := database.DBCon.Query("SELECT id, title, body FROM issues WHERE is_archived=0")
     if err != nil {
         panic(err.Error())
     }
@@ -40,7 +38,7 @@ func GetIssues(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateIssue(w http.ResponseWriter, r *http.Request) {
-    stmt, err := db.Prepare("INSERT INTO issues(title, body, is_archived) VALUES(?,?,?)")
+    stmt, err := database.DBCon.Prepare("INSERT INTO issues(title, body, is_archived) VALUES(?,?,?)")
     if err != nil {
         panic(err.Error())
     }
@@ -70,7 +68,7 @@ func GetIssue(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     params := mux.Vars(r)
 
-    result, err := db.Query("SELECT id, title, body, is_archived FROM issues WHERE id = ?;", params["id"])
+    result, err := database.DBCon.Query("SELECT id, title, body, is_archived FROM issues WHERE id = ?;", params["id"])
     if err != nil {
         panic(err.Error())
     }
@@ -90,7 +88,7 @@ func GetIssue(w http.ResponseWriter, r *http.Request) {
 func UpdateIssue(w http.ResponseWriter, r *http.Request) {
     params := mux.Vars(r)
 
-    stmt, err := db.Prepare("UPDATE issues SET title = ?, body = ?, is_archived = ? WHERE id = ?;")
+    stmt, err := database.DBCon.Prepare("UPDATE issues SET title = ?, body = ?, is_archived = ? WHERE id = ?;")
     if err != nil {
         panic(err.Error())
     }
