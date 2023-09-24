@@ -2,9 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
     "os"
 
@@ -12,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
     "github.com/joho/godotenv"
 
-    "github.com/lawrencedrums/gojira/internal"
+    "github.com/lawrencedrums/gojira/api/v1"
 )
 
 var db *sql.DB
@@ -75,108 +73,11 @@ func main() {
 
     router := mux.NewRouter()
 
-    router.HandleFunc("/issues", getIssues).Methods("GET")
-    router.HandleFunc("/issues", createIssue).Methods("POST")
-    router.HandleFunc("/issues/{id}", getIssue).Methods("GET")
-    router.HandleFunc("/issues/{id}", updateIssue).Methods("PUT")
+    router.HandleFunc("/issues", handlers.GetIssues).Methods("GET")
+    router.HandleFunc("/issues", handlers.CreateIssue).Methods("POST")
+    router.HandleFunc("/issues/{id}", handlers.GetIssue).Methods("GET")
+    router.HandleFunc("/issues/{id}", handlers.UpdateIssue).Methods("PUT")
 
     http.ListenAndServe(":8000", router)
 }
 
-func getIssues(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
-
-    result, err := db.Query("SELECT id, title, body FROM issues WHERE is_archived=0")
-    if err != nil {
-        panic(err.Error())
-    }
-    defer result.Close()
-
-    var issues []models.Issue
-
-    for result.Next() {
-        var issue models.Issue
-        err := result.Scan(&issue.ID, &issue.Title, &issue.Body)
-        if err != nil {
-            panic(err.Error())
-        }
-
-        issues = append(issues, issue)
-    }
-    json.NewEncoder(w).Encode(issues)
-}
-
-func createIssue(w http.ResponseWriter, r *http.Request) {
-    stmt, err := db.Prepare("INSERT INTO issues(title, body, is_archived) VALUES(?,?,?)")
-    if err != nil {
-        panic(err.Error())
-    }
-
-    body, err := io.ReadAll(r.Body)
-    if err != nil {
-        panic(err.Error())
-    }
-
-    keyVal := make(map[string]string)
-    json.Unmarshal(body, &keyVal)
-    issueTitle := keyVal["title"]
-    issueBody := keyVal["body"]
-    issueIsArchived := keyVal["is_archived"]
-
-    var res sql.Result
-    res, err = stmt.Exec(issueTitle, issueBody, issueIsArchived)
-    if err != nil {
-        panic(err.Error())
-    }
-
-    issueId, err := res.LastInsertId()
-    fmt.Fprintf(w, "Issue ID %d created", issueId)
-}
-
-func getIssue(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
-    params := mux.Vars(r)
-
-    result, err := db.Query("SELECT id, title, body, is_archived FROM issues WHERE id = ?;", params["id"])
-    if err != nil {
-        panic(err.Error())
-    }
-    defer result.Close()
-
-    var issue models.Issue
-
-    for result.Next() {
-        err := result.Scan(&issue.ID, &issue.Title, &issue.Body, &issue.IsArchived)
-        if err != nil {
-            panic(err.Error())
-        }
-    }
-    json.NewEncoder(w).Encode(issue)
-}
-
-func updateIssue(w http.ResponseWriter, r *http.Request) {
-    params := mux.Vars(r)
-
-    stmt, err := db.Prepare("UPDATE issues SET title = ?, body = ?, is_archived = ? WHERE id = ?;")
-    if err != nil {
-        panic(err.Error())
-    }
-
-    body, err := io.ReadAll(r.Body)
-    if err != nil {
-        panic(err.Error())
-    }
-
-    keyVal := make(map[string]string)
-    json.Unmarshal(body, &keyVal)
-    newTitle := keyVal["title"]
-    newBody := keyVal["body"]
-    newIsArchived := keyVal["is_archived"]
-
-    _, err = stmt.Exec(newTitle, newBody, newIsArchived, params["id"])
-    if err != nil {
-        panic(err.Error())
-    }
-
-    fmt.Fprintf(w, "Issus %s updated", params["id"])
-}
