@@ -8,10 +8,16 @@
         <div>
             {{ range . }}
             <div style="margin: 2rem;">
+                <p>ID: {{ .ID }}</p>
                 <p>Title: {{ .Title }}</p>
-                <p>Body: {{ .Body }}</p>
+                <button hx-get="/issues/{{ .ID }}"
+                    hx-trigger="click"
+                    hx-target="#issues-details">
+                    Details
+                </button>
             </div>
             {{ end }}
         </div>
+        <div id="issues-details"></div>
     </body>
 </html>

@@ -92,7 +92,6 @@ func CreateIssue(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetIssue(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
     params := mux.Vars(r)
 
     result, err := database.DBCon.Query("SELECT id, title, body, is_archived FROM issues WHERE id = ?;", params["id"])
@@ -109,7 +108,10 @@ func GetIssue(w http.ResponseWriter, r *http.Request) {
             panic(err.Error())
         }
     }
-    json.NewEncoder(w).Encode(issue)
+
+    issueDetailsTpl := fmt.Sprintf("%s/issue_details.html", tplDir)
+    t := template.Must(template.ParseFiles(issueDetailsTpl))
+    t.Execute(w, issue)
 }
 
 func UpdateIssue(w http.ResponseWriter, r *http.Request) {
