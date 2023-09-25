@@ -18,9 +18,27 @@ import (
 var tplDir = "cmd/gojira/templates"
 
 func BaseHandler(w http.ResponseWriter, r *http.Request) {
+    result, err := database.DBCon.Query("SELECT id, title, body FROM issues WHERE is_archived=0")
+    if err != nil {
+        panic(err.Error())
+    }
+    defer result.Close()
+
+    var issues []models.Issue
+
+    for result.Next() {
+        var issue models.Issue
+        err := result.Scan(&issue.ID, &issue.Title, &issue.Body)
+        if err != nil {
+            panic(err.Error())
+        }
+
+        issues = append(issues, issue)
+    }
+
     baseTpl := fmt.Sprintf("%s/base.html", tplDir)
     t := template.Must(template.ParseFiles(baseTpl))
-    t.Execute(w, nil)
+    t.Execute(w, issues)
 }
 
 func GetIssues(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +61,6 @@ func GetIssues(w http.ResponseWriter, r *http.Request) {
 
         issues = append(issues, issue)
     }
-    fmt.Println("Returning all issues")
     json.NewEncoder(w).Encode(issues)
 }
 
@@ -120,4 +137,8 @@ func UpdateIssue(w http.ResponseWriter, r *http.Request) {
     }
 
     fmt.Fprintf(w, "Issus %s updated", params["id"])
+}
+
+func Reset(w http.ResponseWriter, r *http.Request) {
+    database.DBCon.Exec("TRUNCATE TABLE issues")
 }

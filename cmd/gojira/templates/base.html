@@ -5,12 +5,13 @@
     </head>
     <body>
         <h1>You have issues</h1>
-        <div id="issues-board" placeholder="getting your issues...">
-        </div>
-        <div hx-get="/issues"
-            hx-trigger="load"
-            hx-swap="outerHTML"
-            hx-target="#issues-board">
+        <div>
+            {{ range . }}
+            <div style="margin: 2rem;">
+                <p>Title: {{ .Title }}</p>
+                <p>Body: {{ .Body }}</p>
+            </div>
+            {{ end }}
         </div>
     </body>
 </html>
