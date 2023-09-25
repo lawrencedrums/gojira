@@ -13,22 +13,23 @@ import (
     "github.com/lawrencedrums/gojira/internal/database"
 )
 
-var err error
-
-const (
-    dbHost = "127.0.0.1"
-    dbPort = "3306"
+var (
+    DBUser string
+    DBPass string
+    err error
 )
 
-func main() {
+func init() {
     err = godotenv.Load(".env")
     if err != nil {
         panic(err.Error())
     }
-    dbUser := os.Getenv("DBUser")
-    dbPass := os.Getenv("DBPass")
+    DBUser = os.Getenv("DBUser")
+    DBPass = os.Getenv("DBPass")
+}
 
-    dbSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/", dbUser, dbPass, dbHost, dbPort)
+func main() {
+    dbSource := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/", DBUser, DBPass)
     database.DBCon, err = sql.Open("mysql", dbSource)
     if err != nil {
         panic(err.Error())
@@ -38,30 +39,30 @@ func main() {
     if err = database.DBCon.Ping(); err != nil {
         panic(err.Error())
     }
-    fmt.Println("Connection to DB established")
 
-    ensureDBExists(database.DBCon)
-    ensureTablesExists(database.DBCon)
+    ensureDBExists()
+    ensureTablesExists()
 
+    fmt.Println("Server running at localhost:8000")
     router := router.NewRouter()
     http.ListenAndServe(":8000", router)
 }
 
-func ensureDBExists(DB *sql.DB) {
-    _, err = DB.Exec("CREATE DATABASE IF NOT EXISTS gojira")
+func ensureDBExists() {
+    _, err = database.DBCon.Exec("CREATE DATABASE IF NOT EXISTS gojira")
     if err != nil {
         panic(err.Error())
     }
 
-    _, err = DB.Exec("USE gojira")
+    _, err = database.DBCon.Exec("USE gojira")
     if err != nil {
         panic(err.Error())
     }
 }
 
-func ensureTablesExists(DB *sql.DB) {
+func ensureTablesExists() {
     var stmt *sql.Stmt
-    stmt, err = DB.Prepare(`
+    stmt, err = database.DBCon.Prepare(`
         CREATE TABLE IF NOT EXISTS issues(
             id INT NOT NULL AUTO_INCREMENT,
             title VARCHAR(255),

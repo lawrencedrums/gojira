@@ -1,6 +1,11 @@
 .DS_Store
 
 .env
+*.toml
+
+**/tmp
+**/cmd/gojira/tmp
+*.log
 
 gojira
 !/cmd/gojira
