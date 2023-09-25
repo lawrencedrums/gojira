@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <h1>You have issues</h1>
+        <div id="issues-board" placeholder="getting your issues...">
+        </div>
+        <div hx-get="/issues"
+            hx-trigger="load"
+            hx-swap="outerHTML"
+            hx-target="#issues-board">
+        </div>
+    </body>
+</html>

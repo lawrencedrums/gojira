@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+    "html/template"
 	"io"
 	"net/http"
 
@@ -13,6 +14,14 @@ import (
     "github.com/lawrencedrums/gojira/internal/models"
     "github.com/lawrencedrums/gojira/internal/database"
 )
+
+var tplDir = "cmd/gojira/templates"
+
+func BaseHandler(w http.ResponseWriter, r *http.Request) {
+    baseTpl := fmt.Sprintf("%s/base.html", tplDir)
+    t := template.Must(template.ParseFiles(baseTpl))
+    t.Execute(w, nil)
+}
 
 func GetIssues(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
@@ -34,6 +43,7 @@ func GetIssues(w http.ResponseWriter, r *http.Request) {
 
         issues = append(issues, issue)
     }
+    fmt.Println("Returning all issues")
     json.NewEncoder(w).Encode(issues)
 }
 

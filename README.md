@@ -1,6 +1,6 @@
 # Gojira
 
-A minimalist, "JIRA" alternative written in Go (Gojira is also one of my favourite bands!)
+A minimalist, "JIRA" alternative written in Go & HTMX (Gojira is also one of my favourite bands!)
 
 ## Requirements
 [Go](https://go.dev/dl/)
@@ -18,7 +18,7 @@ or
 `go build ./cmd/gojira && ./gojira` to build and run the executable
 
 ## Interacting
-Right now it is only a simple CRUD endpoint
+Navigate to `localhost:8000` to see all issues created
 
 You can use `curl` or tools like Postman to interact with the DB at `localhost:8000`
 
