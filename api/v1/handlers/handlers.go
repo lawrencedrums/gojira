@@ -114,6 +114,29 @@ func GetIssue(w http.ResponseWriter, r *http.Request) {
     t.Execute(w, issue)
 }
 
+func EditIssue(w http.ResponseWriter, r *http.Request) {
+    params := mux.Vars(r)
+
+    result, err := database.DBCon.Query("SELECT id, title, body, is_archived FROM issues WHERE id = ?;", params["id"])
+    if err != nil {
+        panic(err.Error())
+    }
+    defer result.Close()
+
+    var issue models.Issue
+
+    for result.Next() {
+        err := result.Scan(&issue.ID, &issue.Title, &issue.Body, &issue.IsArchived)
+        if err != nil {
+            panic(err.Error())
+        }
+    }
+
+    editIssueTpl := fmt.Sprintf("%s/issue_edit.html", tplDir)
+    t := template.Must(template.ParseFiles(editIssueTpl))
+    t.Execute(w, issue)
+}
+
 func UpdateIssue(w http.ResponseWriter, r *http.Request) {
     params := mux.Vars(r)
 
@@ -122,23 +145,28 @@ func UpdateIssue(w http.ResponseWriter, r *http.Request) {
         panic(err.Error())
     }
 
-    body, err := io.ReadAll(r.Body)
-    if err != nil {
-        panic(err.Error())
-    }
-
-    keyVal := make(map[string]string)
-    json.Unmarshal(body, &keyVal)
-    newTitle := keyVal["title"]
-    newBody := keyVal["body"]
-    newIsArchived := keyVal["is_archived"]
+    r.ParseForm()
+    newTitle := r.Form["title"][0]
+    newBody := r.Form["body"][0]
+    newIsArchived := "0"
 
     _, err = stmt.Exec(newTitle, newBody, newIsArchived, params["id"])
     if err != nil {
         panic(err.Error())
     }
 
-    fmt.Fprintf(w, "Issus %s updated", params["id"])
+    fmt.Printf("Issus %s updated", params["id"])
+
+    issue := models.Issue{
+        ID: params["id"],
+        Title: newTitle,
+        Body: newBody,
+        IsArchived: true,
+    }
+
+    issueDetailsTpl := fmt.Sprintf("%s/issue_details.html", tplDir)
+    t := template.Must(template.ParseFiles(issueDetailsTpl))
+    t.Execute(w, issue)
 }
 
 func Reset(w http.ResponseWriter, r *http.Request) {

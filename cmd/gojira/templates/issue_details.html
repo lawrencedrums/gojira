@@ -1,5 +1,10 @@
 <div>
-    <p>{{ .ID }}</p>
-    <p>{{ .Title }}</p>
-    <p>{{ .Body }}</p>
+    <div><label>{{ .ID }}</label></div>
+    <div><label>Title: {{ .Title }}</label></div>
+    <div><label>Body: {{ .Body }}</label></div>
+    <button hx-get="/issues/edit/{{ .ID }}"
+        hx-trigger="click"
+        hx-target="#issue-details">
+        Edit
+    </button>
 </div>
