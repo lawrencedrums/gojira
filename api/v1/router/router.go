@@ -15,6 +15,7 @@ func NewRouter() *mux.Router {
     router.HandleFunc("/issues/{id}", handlers.GetIssue).Methods("GET")
     router.HandleFunc("/issues/{id}", handlers.UpdateIssue).Methods("PUT")
     router.HandleFunc("/issues/edit/{id}", handlers.EditIssue).Methods("GET")
+    router.HandleFunc("/issues/new/", handlers.NewIssueForm).Methods("GET")
     router.HandleFunc("/reset", handlers.Reset).Methods("GET")
 
     return router

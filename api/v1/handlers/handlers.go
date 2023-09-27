@@ -2,10 +2,8 @@ package handlers
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
     "html/template"
-	"io"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -18,14 +16,12 @@ import (
 var tplDir = "cmd/gojira/templates"
 
 func BaseHandler(w http.ResponseWriter, r *http.Request) {
-    baseTpl := fmt.Sprintf("%s/base.html", tplDir)
-    t := template.Must(template.ParseFiles(baseTpl))
+    allTpl := fmt.Sprintf("%s/*.html", tplDir)
+    t := template.Must(template.ParseGlob(allTpl))
     t.Execute(w, nil)
 }
 
 func GetIssues(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
-
     result, err := database.DBCon.Query("SELECT id, title, body FROM issues WHERE is_archived=0")
     if err != nil {
         panic(err.Error())
@@ -43,6 +39,7 @@ func GetIssues(w http.ResponseWriter, r *http.Request) {
 
         issues = append(issues, issue)
     }
+
     issuesTpl := fmt.Sprintf("%s/issue_board.html", tplDir)
     t := template.Must(template.ParseFiles(issuesTpl))
     t.Execute(w, issues)
@@ -54,16 +51,10 @@ func CreateIssue(w http.ResponseWriter, r *http.Request) {
         panic(err.Error())
     }
 
-    body, err := io.ReadAll(r.Body)
-    if err != nil {
-        panic(err.Error())
-    }
-
-    keyVal := make(map[string]string)
-    json.Unmarshal(body, &keyVal)
-    issueTitle := keyVal["title"]
-    issueBody := keyVal["body"]
-    issueIsArchived := keyVal["is_archived"]
+    r.ParseForm()
+    issueTitle := r.Form["title"][0]
+    issueBody := r.Form["body"][0]
+    issueIsArchived := "0"
 
     var res sql.Result
     res, err = stmt.Exec(issueTitle, issueBody, issueIsArchived)
@@ -73,6 +64,16 @@ func CreateIssue(w http.ResponseWriter, r *http.Request) {
 
     issueId, err := res.LastInsertId()
     fmt.Fprintf(w, "Issue ID %d created", issueId)
+
+    indexTpl := fmt.Sprintf("%s/index.html", tplDir)
+    t := template.Must(template.ParseFiles(indexTpl))
+    t.Execute(w, nil)
+}
+
+func NewIssueForm(w http.ResponseWriter, r *http.Request) {
+    newIssueTpl := fmt.Sprintf("%s/issue_new.html", tplDir)
+    t := template.Must(template.ParseFiles(newIssueTpl))
+    t.Execute(w, nil)
 }
 
 func GetIssue(w http.ResponseWriter, r *http.Request) {
@@ -148,8 +149,8 @@ func UpdateIssue(w http.ResponseWriter, r *http.Request) {
         IsArchived: true,
     }
 
-    baseTpl := fmt.Sprintf("%s/base.html", tplDir)
-    t := template.Must(template.ParseFiles(baseTpl))
+    indexTpl := fmt.Sprintf("%s/index.html", tplDir)
+    t := template.Must(template.ParseFiles(indexTpl))
     t.Execute(w, issue)
 }
 

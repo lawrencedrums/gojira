@@ -4,10 +4,6 @@
         <script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
     </head>
     <body>
-        <div id="base">
-            <h1>You have issues</h1>
-            <div id="issue-board" hx-get="/issues" hx-trigger="load"></div>
-            <div id="issue-details"></div>
-        </div>
+        {{ template "index.html" }}
     </body>
 </html>

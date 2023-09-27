@@ -1,0 +1,16 @@
+<form hx-post="/issues" hx-target="#index">
+    <div>
+        <label>Title: </label>
+        <input autofocus type="text" name="title">
+    </div>
+    <div>
+        <label>Body: </label>
+        <input type="text" name="body">
+    </div>
+    <button type="submit">
+        Create
+    </button>
+    <button hx-get="/issues" hx-target="#index">
+        Cancel
+    </button>
+</form>

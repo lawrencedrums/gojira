@@ -1,0 +1,13 @@
+<div id="index">
+    <div id="new-issue">
+        <button hx-get="/issues/new/" hx-trigger="click" hx-target="#new-issue">
+            Create new issue
+        </button>
+    </div>
+    <div id="issue-board" hx-get="/issues" hx-trigger="load"></div>
+    {{ if . }}
+        <div id="issue-details" hx-get="/issues/{{ .ID }}" hx-trigger="load"></div>
+    {{ else }}
+        <div id="issue-details"></div>
+    {{ end }}
+</div>
