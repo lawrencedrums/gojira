@@ -1,16 +1,18 @@
-<form hx-put="/issues/{{ .ID }}" hx-target="#issue-details" hx-swap="outerHTML">
+<form hx-put="/issues/{{ .ID }}" hx-target="#base">
     <div>
         <label>{{ .ID }}</label>
     </div>
     <div>
-        <label for="title">Title:</label>
+        <label for="title">Title: </label>
         <input autofocus type="text" id="title" name="title" value="{{ .Title }}">
     </div>
     <div>
-        <label for="body">Body:</label>
+        <label for="body">Body: </label>
         <input type="text" id="body" name="body" value="{{ .Body }}">
     </div>
-    <button>Update</button>
+    <button type="submit">
+        Update
+    </button>
     <button hx-get="/issues/{{ .ID }}" hx-target="#issue-details">
         Cancel
     </button>

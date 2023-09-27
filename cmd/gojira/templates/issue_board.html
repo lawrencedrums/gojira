@@ -1,0 +1,11 @@
+{{ range . }}
+<div style="margin: 2rem;">
+    <p>{{ .ID }}</p>
+    <p>Title: {{ .Title }}</p>
+    <button hx-get="/issues/{{ .ID }}"
+        hx-trigger="click"
+        hx-target="#issue-details">
+        Details
+    </button>
+</div>
+{{ end }}
