@@ -133,7 +133,14 @@ func UpdateIssue(w http.ResponseWriter, r *http.Request) {
     r.ParseForm()
     newTitle := r.Form["title"][0]
     newBody := r.Form["body"][0]
+
     newIsArchived := "0"
+    boolIsArchived := false
+    val, ok := r.Form["isArchived"]
+    if ok {
+        newIsArchived = val[0]
+        boolIsArchived = true
+    }
 
     _, err = stmt.Exec(newTitle, newBody, newIsArchived, params["id"])
     if err != nil {
@@ -146,7 +153,7 @@ func UpdateIssue(w http.ResponseWriter, r *http.Request) {
         ID: params["id"],
         Title: newTitle,
         Body: newBody,
-        IsArchived: true,
+        IsArchived: boolIsArchived,
     }
 
     indexTpl := fmt.Sprintf("%s/index.html", tplDir)
