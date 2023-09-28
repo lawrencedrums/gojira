@@ -1,9 +1,10 @@
 package router
 
 import (
-    "github.com/gorilla/mux"
+	"net/http"
 
-    "github.com/lawrencedrums/gojira/api/v1/handlers"
+	"github.com/gorilla/mux"
+	"github.com/lawrencedrums/gojira/api/v1/handlers"
 )
 
 func NewRouter() *mux.Router {
@@ -17,6 +18,9 @@ func NewRouter() *mux.Router {
     router.HandleFunc("/issues/edit/{id}", handlers.EditIssue).Methods("GET")
     router.HandleFunc("/issues/new/", handlers.NewIssueForm).Methods("GET")
     router.HandleFunc("/reset", handlers.Reset).Methods("GET")
+
+    staticDir := "./cmd/gojira/static"
+    router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(staticDir))))
 
     return router
 }

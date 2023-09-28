@@ -9,3 +9,5 @@
 
 gojira
 !/cmd/gojira
+
+/node_modules
