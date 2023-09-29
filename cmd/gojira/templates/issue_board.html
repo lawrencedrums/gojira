@@ -1,11 +1,14 @@
 {{ range . }}
-<div style="margin: 2rem;">
-    <p>{{ .ID }}</p>
-    <p>Title: {{ .Title }}</p>
-    <button hx-get="/issues/{{ .ID }}"
-        hx-trigger="click"
-        hx-target="#issue-details">
-        Details
-    </button>
+<div class="m-1 p-2 bg-white rounded">
+    <div>
+        <p>{{ .Title }}</p>
+        {{ .ID }}
+        <button class="bg-slate-200 hover:bg-slate-300 text-slate-500 ml-4 p-1 rounded"
+            hx-get="/issues/{{ .ID }}"
+            hx-trigger="click"
+            hx-target="#issue-details">
+            Details
+        </button>
+    </div>
 </div>
 {{ end }}

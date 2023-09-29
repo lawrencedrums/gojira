@@ -1,23 +1,37 @@
-<form hx-put="/issues/{{ .ID }}" hx-target="#index">
+<form class="max-w-xs space-y-3 border-2 border-stale-200 my-2 p-2 rounded"
+    hx-put="/issues/{{ .ID }}" 
+    hx-target="#index">
     <div>
         <label>{{ .ID }}</label>
     </div>
     <div>
-        <label for="title">Title: </label>
-        <input autofocus type="text" id="title" name="title" value="{{ .Title }}">
+        <div><label for="title">Title: </label></div>
+        <input class="border-2"
+            autofocus 
+            type="text"
+            id="title"
+            name="title"
+            value="{{ .Title }}">
     </div>
     <div>
-        <label for="body">Body: </label>
-        <input type="text" id="body" name="body" value="{{ .Body }}">
-     <div>
+        <div><label for="body">Body: </label></div>
+        <input class="border-2"
+            type="text"
+            id="body"
+            name="body"
+            value="{{ .Body }}">
+    </div>
+    <div>
         <label for="isArchived">Archive: </label>
         <input type="checkbox" id="isArchived" name="isArchived" value="1">
     </div>
-    </div>
-    <button type="submit">
+    <button class="bg-slate-200 hover:bg-slate-300 text-slate-500 p-1 rounded"
+        type="submit">
         Update
     </button>
-    <button hx-get="/issues/{{ .ID }}" hx-target="#issue-details">
+    <button class="bg-slate-200 hover:bg-slate-300 text-slate-500 p-1 rounded"
+        hx-get="/issues/{{ .ID }}"
+        hx-target="#issue-details">
         Cancel
     </button>
 </form>

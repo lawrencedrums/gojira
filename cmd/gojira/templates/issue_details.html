@@ -1,8 +1,17 @@
-<div>
-    <div><label>{{ .ID }}</label></div>
-    <div><label>Title: {{ .Title }}</label></div>
-    <div><label>Body: {{ .Body }}</label></div>
-    <button hx-get="/issues/edit/{{ .ID }}"
+<div class="max-w-xs space-y-3 border-2 border-slate-200 my-2 p-2 rounded">
+    <div>
+        <label>{{ .ID }}</label>
+    </div>
+    <div>
+        <div><label>Title:</label></div>
+        <div>{{ .Title }}</div>
+    </div>
+    <div>
+        <div><label>Body:</label></div>
+        <div>{{ .Body }}</div>
+    </div>
+    <button class="bg-slate-200 hover:bg-slate-300 text-slate-500 p-1 rounded"
+        hx-get="/issues/edit/{{ .ID }}"
         hx-trigger="click"
         hx-target="#issue-details">
         Edit

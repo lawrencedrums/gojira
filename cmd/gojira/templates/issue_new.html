@@ -1,16 +1,23 @@
-<form hx-post="/issues" hx-target="#index">
+<form class="max-w-xs space-y-1 my-2 p-2 border-2 rounded"
+    hx-post="/issues"
+    hx-target="#index">
     <div>
         <label>Title: </label>
-        <input autofocus type="text" name="title">
+        <input class="border-2" autofocus type="text" name="title">
     </div>
     <div>
         <label>Body: </label>
-        <input type="text" name="body">
+        <input class="border-2" type="text" name="body">
     </div>
-    <button type="submit">
-        Create
-    </button>
-    <button hx-get="/" hx-target="#index">
-        Cancel
-    </button>
+    <div>
+        <button class="bg-slate-200 hover:bg-slate-300 text-slate-500 p-1 rounded"
+            type="submit">
+            Create
+        </button>
+        <button class="bg-slate-200 hover:bg-slate-300 text-slate-500 p-1 rounded"
+            hx-get="/"
+            hx-target="#index">
+            Cancel
+        </button>
+    </div>
 </form>

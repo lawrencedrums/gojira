@@ -1,16 +1,20 @@
-<div id="index">
-    <h1 class="text-3xl ml-10 my-8 font-bold underline">
+<div id="index" class="mx-12 my-8">
+    <h1 class="text-3xl font-bold underline">
         Gojira
     </h1>
     <div id="new-issue">
-        <button class="ml-10 border-black"
+        <button class="bg-slate-200 hover:bg-slate-300 text-slate-500 my-4 py-1 px-2 rounded"
             hx-get="/issues/new/"
             hx-trigger="click"
             hx-target="#new-issue">
-            Create new issue
+            + New issue
         </button>
     </div>
-    <div id="issue-board" hx-get="/issues" hx-trigger="load"></div>
+    <div class="max-w-xs bg-slate-200 p-1 rounded"
+        id="issue-board"
+        hx-get="/issues"
+        hx-trigger="load">
+    </div>
     {{ if . }}
         <div id="issue-details" hx-get="/issues/{{ .ID }}" hx-trigger="load"></div>
     {{ else }}
