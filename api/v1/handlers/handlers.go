@@ -63,7 +63,7 @@ func CreateIssue(w http.ResponseWriter, r *http.Request) {
     }
 
     issueId, err := res.LastInsertId()
-    fmt.Fprintf(w, "Issue ID %d created", issueId)
+    fmt.Printf("Issue ID %d created\n", issueId)
 
     indexTpl := fmt.Sprintf("%s/index.html", tplDir)
     t := template.Must(template.ParseFiles(indexTpl))
@@ -135,11 +135,8 @@ func UpdateIssue(w http.ResponseWriter, r *http.Request) {
     newBody := r.Form["body"][0]
 
     newIsArchived := "0"
-    boolIsArchived := false
-    val, ok := r.Form["isArchived"]
-    if ok {
+    if val, ok := r.Form["isArchived"]; ok {
         newIsArchived = val[0]
-        boolIsArchived = true
     }
 
     _, err = stmt.Exec(newTitle, newBody, newIsArchived, params["id"])
@@ -147,14 +144,14 @@ func UpdateIssue(w http.ResponseWriter, r *http.Request) {
         panic(err.Error())
     }
 
-    fmt.Printf("Issus %s updated", params["id"])
-
     issue := models.Issue{
         ID: params["id"],
         Title: newTitle,
         Body: newBody,
-        IsArchived: boolIsArchived,
+        IsArchived: newIsArchived != "0",
     }
+
+    fmt.Printf("Issus %s updated\n", params["id"])
 
     indexTpl := fmt.Sprintf("%s/index.html", tplDir)
     t := template.Must(template.ParseFiles(indexTpl))

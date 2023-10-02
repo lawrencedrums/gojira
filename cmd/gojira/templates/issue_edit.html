@@ -1,5 +1,5 @@
 <form class="max-w-xs space-y-3 border-2 border-stale-200 my-2 p-2 rounded"
-    hx-put="/issues/{{ .ID }}" 
+    hx-put="/issues/{{ .ID }}"
     hx-target="#index">
     <div>
         <label>{{ .ID }}</label>
@@ -7,7 +7,7 @@
     <div>
         <div><label for="title">Title: </label></div>
         <input class="border-2"
-            autofocus 
+            autofocus
             type="text"
             id="title"
             name="title"

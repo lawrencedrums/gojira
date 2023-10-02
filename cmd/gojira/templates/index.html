@@ -1,4 +1,4 @@
-<div id="index" class="mx-12 my-8">
+<div id="main" class="mx-12 my-8">
     <h1 class="text-3xl font-bold underline">
         Gojira
     </h1>
@@ -15,9 +15,8 @@
         hx-get="/issues"
         hx-trigger="load">
     </div>
-    {{ if . }}
-        <div id="issue-details" hx-get="/issues/{{ .ID }}" hx-trigger="load"></div>
-    {{ else }}
-        <div id="issue-details"></div>
+    <div id="issue-details"></div>
+    {{ if and (.ID) (not .IsArchived) }}
+    <div hx-get="/issues/{{ .ID }}" hx-target="#issue-details" hx-trigger="load"></div>
     {{ end }}
 </div>
