@@ -1,14 +1,11 @@
 {{ range . }}
-<div class="m-1 p-2 bg-white rounded">
+<div class="m-1 p-2 bg-white outline outline-0 hover:outline-2 hover:outline-blue-400 cursor-pointer rounded"
+    hx-get="/issues/{{ .ID }}"
+    hx-trigger="click"
+    hx-target="#issue-details">
     <div>
-        <p>{{ .Title }}</p>
+        {{ .Title }}<br>
         {{ .ID }}
-        <button class="bg-slate-200 hover:bg-slate-300 text-slate-500 ml-4 p-1 rounded"
-            hx-get="/issues/{{ .ID }}"
-            hx-trigger="click"
-            hx-target="#issue-details">
-            Details
-        </button>
     </div>
 </div>
 {{ end }}
