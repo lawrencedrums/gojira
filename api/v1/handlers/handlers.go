@@ -22,17 +22,41 @@ func BaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetIssues(w http.ResponseWriter, r *http.Request) {
-    result, err := database.DBCon.Query("SELECT id, title, body FROM issues WHERE is_archived=0")
+    projectsRes, err := database.DBCon.Query("SELECT id, title FROM projects WHERE is_archived=0")
     if err != nil {
         panic(err.Error())
     }
-    defer result.Close()
+    defer projectsRes.Close()
+
+    var projects []models.Project
+
+    for projectsRes.Next() {
+        var project models.Project
+        err := projectsRes.Scan(&project.ID, &project.Title)
+        if err != nil {
+            panic(err.Error())
+        }
+
+        projects = append(projects, project)
+    }
+
+    if len(projects) == 0 {
+        issuesTpl := fmt.Sprintf("%s/issue_board.html", tplDir)
+        t := template.Must(template.ParseFiles(issuesTpl))
+        t.Execute(w, nil)
+    }
+
+    issuesRes, err := database.DBCon.Query("SELECT id, title, body FROM issues WHERE is_archived=0")
+    if err != nil {
+        panic(err.Error())
+    }
+    defer issuesRes.Close()
 
     var issues []models.Issue
 
-    for result.Next() {
+    for issuesRes.Next() {
         var issue models.Issue
-        err := result.Scan(&issue.ID, &issue.Title, &issue.Body)
+        err := issuesRes.Scan(&issue.ID, &issue.Title, &issue.Body)
         if err != nil {
             panic(err.Error())
         }

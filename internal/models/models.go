@@ -9,7 +9,7 @@ type Project struct {
 
 type Issue struct {
     ID         string
-    Project    Project
+    ProjectID  string
     Title      string
     Body       string
     IsArchived bool
