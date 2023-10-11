@@ -82,7 +82,7 @@ func ensureTablesExists() {
     stmt, err = database.DBCon.Prepare(`
         CREATE TABLE IF NOT EXISTS issues(
             id INT NOT NULL AUTO_INCREMENT,
-            project_id INT,
+            project_id INT NOT NULL,
             title VARCHAR(255),
             body VARCHAR(1020),
             is_archived BOOLEAN,
