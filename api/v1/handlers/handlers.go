@@ -22,17 +22,34 @@ func BaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetIssues(w http.ResponseWriter, r *http.Request) {
-    result, err := database.DBCon.Query("SELECT id, title, body FROM issues WHERE is_archived=0")
+    projects := models.GetProjects()
+
+    if len(projects) == 0 {
+        issuesTpl := fmt.Sprintf("%s/project_new.html", tplDir)
+        t := template.Must(template.ParseFiles(issuesTpl))
+        t.Execute(w, nil)
+        return
+    }
+
+    projectID := projects[0].ID
+    issuesRes, err := database.DBCon.Query(`
+        SELECT i.id, i.title, i.body
+        FROM issues i
+        INNER JOIN projects p
+        ON i.id = p.id
+        WHERE i.is_archived=0 AND p.id=?;`,
+        projectID,
+    )
     if err != nil {
         panic(err.Error())
     }
-    defer result.Close()
+    defer issuesRes.Close()
 
     var issues []models.Issue
 
-    for result.Next() {
+    for issuesRes.Next() {
         var issue models.Issue
-        err := result.Scan(&issue.ID, &issue.Title, &issue.Body)
+        err := issuesRes.Scan(&issue.ID, &issue.Title, &issue.Body)
         if err != nil {
             panic(err.Error())
         }
@@ -158,6 +175,30 @@ func UpdateIssue(w http.ResponseWriter, r *http.Request) {
     t.Execute(w, issue)
 }
 
+func CreateProject(w http.ResponseWriter, r *http.Request) {
+    stmt, err := database.DBCon.Prepare("INSERT INTO projects(title, is_archived) VALUES(?,?)")
+    if err != nil {
+        panic(err.Error())
+    }
+
+    r.ParseForm()
+    projectTitle := r.Form["title"][0]
+
+    var res sql.Result
+    res, err = stmt.Exec(projectTitle, "0")
+    if err != nil {
+        panic(err.Error())
+    }
+
+    projectId, err := res.LastInsertId()
+    fmt.Printf("Project ID %d created\n", projectId)
+
+    indexTpl := fmt.Sprintf("%s/index.html", tplDir)
+    t := template.Must(template.ParseFiles(indexTpl))
+    t.Execute(w, nil)
+}
+
 func Reset(w http.ResponseWriter, r *http.Request) {
     database.DBCon.Exec("TRUNCATE TABLE issues")
+    database.DBCon.Exec("TRUNCATE TABLE projects")
 }

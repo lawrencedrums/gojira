@@ -17,6 +17,7 @@ func NewRouter() *mux.Router {
     router.HandleFunc("/issues/{id}", handlers.UpdateIssue).Methods("PUT")
     router.HandleFunc("/issues/edit/{id}", handlers.EditIssue).Methods("GET")
     router.HandleFunc("/issues/new/", handlers.NewIssueForm).Methods("GET")
+    router.HandleFunc("/projects", handlers.CreateProject).Methods("POST")
     router.HandleFunc("/reset", handlers.Reset).Methods("GET")
 
     staticDir := "./cmd/gojira/static"

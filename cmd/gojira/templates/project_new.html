@@ -1,0 +1,17 @@
+<div class="my-4 py-1">
+    Create a project to start tracking your issues
+    <form class="max-w-xs space-y-1 my-2 p-2 border-2 rounded"
+        hx-post="/projects"
+        hx-target="#index">
+        <div>
+            <label>Title: </label>
+            <input class="border-2" autofocus type="text" name="title">
+        </div>
+        <div>
+            <button class="bg-slate-200 hover:bg-slate-300 text-slate-500 p-1 rounded"
+                type="submit">
+                Create
+            </button>
+        </div>
+    </form>
+</div>

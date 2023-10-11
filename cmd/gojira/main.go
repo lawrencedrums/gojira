@@ -62,13 +62,32 @@ func ensureDBExists() {
 
 func ensureTablesExists() {
     var stmt *sql.Stmt
+    stmt, err =database.DBCon.Prepare(`
+        CREATE TABLE IF NOT EXISTS projects(
+            id INT NOT NULL AUTO_INCREMENT,
+            title VARCHAR(255),
+            is_archived BOOLEAN,
+            PRIMARY KEY (id)
+        );
+    `)
+    if err != nil {
+        panic(err.Error())
+    }
+
+    _, err = stmt.Exec()
+    if err != nil {
+        panic(err.Error())
+    }
+
     stmt, err = database.DBCon.Prepare(`
         CREATE TABLE IF NOT EXISTS issues(
             id INT NOT NULL AUTO_INCREMENT,
+            project_id INT NOT NULL,
             title VARCHAR(255),
             body VARCHAR(1020),
             is_archived BOOLEAN,
-            PRIMARY KEY (id)
+            PRIMARY KEY (id),
+            FOREIGN KEY (project_id) REFERENCES projects(id)
         );
     `)
     if err != nil {
